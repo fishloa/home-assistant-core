@@ -42,7 +42,9 @@
     "step": {
       "init": {
         "title": "Configure Lyngdorf Receiver",
-        "data": {}
+        "data": {
+
+        }
       }
     }
   }
