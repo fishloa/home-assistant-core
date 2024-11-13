@@ -77,13 +77,13 @@ async def async_setup_entry(
     data = hass.data[DOMAIN][config_entry.entry_id]
     receiver: Receiver = data[CONF_RECEIVER]
     device_info: DeviceInfo = data[CONF_DEVICE_INFO]
-    for property, info in TRIMS.items():
+    for prop, info in TRIMS.items():
         entities.append(
             TrimEntity(
                 receiver,
                 config_entry,
                 device_info,
-                property,
+                prop,
                 cast(float, info["min"]),
                 cast(float, info["max"]),
                 cast(str, info["icon"]),
@@ -103,9 +103,9 @@ class TrimEntity(NumberEntity):
         receiver: Receiver,
         config_entry: ConfigEntry,
         device_info: DeviceInfo,
-        property: str,
-        min: float,
-        max: float,
+        property_name: str,
+        min_value: float,
+        max_value: float,
         icon: str,
         step: float,
         name: str,
@@ -113,15 +113,15 @@ class TrimEntity(NumberEntity):
         """Create Trim Slider Entity."""
         self._attr_has_entity_name = True
         self._attr_device_info = device_info
-        self._attr_unique_id = f"{config_entry.unique_id}_{property}"
+        self._attr_unique_id = f"{config_entry.unique_id}_{property_name}"
         self._receiver = receiver
         self._attr_device_class = NumberDeviceClass.SOUND_PRESSURE
         self._attr_name = name
         self._attr_icon = icon
-        self._attr_native_min_value = min
-        self._attr_native_max_value = max
+        self._attr_native_min_value = min_value
+        self._attr_native_max_value = max_value
         self._attr_native_step = step
-        self._property = property
+        self._property = property_name
 
     def set_native_value(self, value: float) -> None:
         """Native value in the receiver."""

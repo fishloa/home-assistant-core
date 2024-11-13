@@ -1,8 +1,9 @@
 """Media Player Entities for Lyngdorf Integration."""
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import timedelta
-from typing import cast
+from typing import Any, cast
 
 from lyngdorf.device import Receiver
 
@@ -50,14 +51,14 @@ class MP60Device(MediaPlayerEntity):
         config_entry: ConfigEntry,
         device_info: DeviceInfo,
         name: str,
-        id: str,
+        unique_id: str,
         features: MediaPlayerEntityFeature = MediaPlayerEntityFeature(0),
     ) -> None:
         """Initialize the device."""
         assert config_entry.unique_id
         self._attr_has_entity_name = True
         self._attr_device_info = device_info
-        self._attr_unique_id = f"{config_entry.unique_id}_{id}"
+        self._attr_unique_id = f"{config_entry.unique_id}_{unique_id}"
         self._receiver = receiver
         self._attr_device_class = MediaPlayerDeviceClass.RECEIVER
         self._attr_name = name
@@ -98,12 +99,12 @@ class MP60ZoneBDevice(MP60Device):
             return MediaPlayerState.OFF
 
     @property
-    def is_volume_muted(self):
+    def is_volume_muted(self) -> bool:
         """Return boolean if volume is currently muted."""
         return self._receiver.zone_b_mute_enabled
 
     @property
-    def volume_level(self):
+    def volume_level(self) -> float:
         """Volume level of the media player (0..1)."""
         # Volume is sent in a format like -50.0. Minimum is -80.0,
         # maximum is 18.0
@@ -114,11 +115,11 @@ class MP60ZoneBDevice(MP60Device):
         return (float(self._receiver.zone_b_volume) + 80) / 100
 
     @property
-    def extra_state_attributes(self):
+    def extra_state_attributes(self) -> Mapping[str, Any] | None:
         """Return device specific state attributes."""
         state_attributes = {}
-        if self._receiver._zone_b_audio_input is not None:
-            state_attributes[ATTR_AUDIO_INPUT] = self._receiver._zone_b_audio_input
+        if self._receiver.zone_b_audio_input is not None:
+            state_attributes[ATTR_AUDIO_INPUT] = self._receiver.zone_b_audio_input
         if self._receiver.zone_b_streaming_source is not None:
             state_attributes[
                 ATTR_STREAMING_SOURCE
@@ -243,22 +244,22 @@ class MP60MainDevice(MP60Device):
             return None
 
     @property
-    def source_list(self):
+    def source_list(self) -> list[str]:
         """Return a list of available input sources."""
         return self._receiver.available_sources
 
     @property
-    def sound_mode_list(self):
+    def sound_mode_list(self) -> list[str]:
         """Return a list of available input sources."""
         return self._receiver.available_sound_modes
 
     @property
-    def is_volume_muted(self):
+    def is_volume_muted(self) -> bool:
         """Return boolean if volume is currently muted."""
         return self._receiver.mute_enabled
 
     @property
-    def volume_level(self):
+    def volume_level(self) -> float:
         """Volume level of the media player (0..1)."""
         # Volume is sent in a format like -50.0. Minimum is -80.0,
         # maximum is 18.0
@@ -269,17 +270,17 @@ class MP60MainDevice(MP60Device):
         return (float(self._receiver.volume) + 80) / 100
 
     @property
-    def source(self):
+    def source(self) -> str:
         """Return the current input source."""
         return self._receiver.source
 
     @property
-    def sound_mode(self):
+    def sound_mode(self) -> str:
         """Return the current matched sound mode."""
         return self._receiver.sound_mode
 
     @property
-    def extra_state_attributes(self):
+    def extra_state_attributes(self) -> Mapping[str, Any] | None:
         """Return device specific state attributes."""
         state_attributes = {}
         if self._receiver.audio_information is not None:
