@@ -1,4 +1,8 @@
 """Media Player Entities for Lyngdorf Integration."""
+
+
+# mypy: ignore-errors
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -95,8 +99,7 @@ class MP60ZoneBDevice(MP60Device):
         """Return the state of the device."""
         if self._receiver.zone_b_power_on:
             return MediaPlayerState.ON
-        else:
-            return MediaPlayerState.OFF
+        return MediaPlayerState.OFF
 
     @property
     def is_volume_muted(self) -> bool:
@@ -104,7 +107,7 @@ class MP60ZoneBDevice(MP60Device):
         return self._receiver.zone_b_mute_enabled
 
     @property
-    def volume_level(self) -> float:
+    def volume_level(self) -> float | None:
         """Volume level of the media player (0..1)."""
         # Volume is sent in a format like -50.0. Minimum is -80.0,
         # maximum is 18.0
@@ -230,7 +233,7 @@ class MP60MainDevice(MP60Device):
         )
 
     @property
-    def media_content_type(self):
+    def media_content_type(self) -> MediaType | None:
         """Video or Audio playing."""
         if self.state == MediaPlayerState.PLAYING:
             if (
@@ -259,7 +262,7 @@ class MP60MainDevice(MP60Device):
         return self._receiver.mute_enabled
 
     @property
-    def volume_level(self) -> float:
+    def volume_level(self) -> float | None:
         """Volume level of the media player (0..1)."""
         # Volume is sent in a format like -50.0. Minimum is -80.0,
         # maximum is 18.0

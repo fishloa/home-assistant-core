@@ -63,7 +63,7 @@ class LyngdorfFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._device_serial_number: str | None = None
         self._name: str | None = None
         self._mac: str | None = None
-        self._host: str
+        self._host: str | None = None
         self._options: dict[str, Any] = {}
 
     async def async_step_user(self, user_input: FlowInput = None) -> FlowResult:
@@ -113,7 +113,7 @@ class LyngdorfFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 self.hass, self._host
             )  # Depends on the ARP table being up to date
 
-            self._device_manufacture = model.manufacturer
+            self._device_manufacturer = model.manufacturer
             assert self._mac
 
             await self.async_set_unique_id(self._mac)
